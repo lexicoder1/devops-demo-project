@@ -1,0 +1,80 @@
+pipeline {
+    agent any
+    
+    tools {
+        // jenkins can either use the nodejs installed in jenkins tools or nodejs  installed in your pc or server
+        nodejs 'node-jenkins'
+        // jenkins uses the docker installed in your pc or server
+    }
+    environment {
+        REGISTRY = 'lexikhoder'   // Docker registry (e.g., Docker Hub or private registry)
+        IMAGE_NAME = 'products'     // Name of your Docker image
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone your GitHub repository
+                git 'https://github.com/lexicoder1/app-devops-test.git'
+            }
+        }
+
+        
+        stage('Check node version') {
+            steps {
+               
+            sh 'node -v'
+               
+            }
+        }
+
+        stage('install packages') {
+            steps {
+          
+            // sh 'cd back-end'
+            sh " npm install "
+               
+            }
+        }
+
+        stage('test node app') {
+            steps {
+            //   testing app if there is a test script ,if test passes then we containerize the application 
+            sh 'echo "testing express app"'
+            
+               
+            }
+        }
+    
+        
+        stage('Build Docker Image') {
+            steps {
+            
+              sh "docker version"   
+              sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER} ."
+           
+                
+            }
+        }
+       
+        stage('Docker Login') {
+            steps {
+                script{
+                    // Log in to Docker and
+                    withDockerRegistry(credentialsId: 'docker-pass') {
+                        
+                        sh "docker push ${REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"
+                    }
+                }
+                    
+                    
+                
+            }
+        }
+        
+        
+    }
+    
+   
+   
+}
