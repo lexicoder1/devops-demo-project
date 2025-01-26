@@ -85,7 +85,7 @@ describe('Integration tests for the books API', () => {
 		expect(statusCode).toBe(201);
 
 		expect(body).toEqual({
-			name: 'Hello wor',
+			name: 'Hello world',
 			author: 'Jack White',
 			id: 2
 		});
